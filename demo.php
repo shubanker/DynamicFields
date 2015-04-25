@@ -1,23 +1,28 @@
 <?php
 session_start();
 require_once 'DynamicFields.php';
-$dynamicFields=new DynamicFields();
+$dynamicFields=new DynamicFields(false,false);
 ?>
 <!doctype html>
 <html lang="en">
 <head>
 	<meta charset="UTF-8" />
-	<title>::Dynamic Fields Demo::</title>
+	<title>::Dynamic Fields Names Demo::</title>
 </head>
 <body>
-	<h1>Dynamic Form Fields</h1><?php if (!empty($_POST)){?>
+	<h1>Dynamic Fields Names</h1>
+	<?php if (!empty($_POST)){?>
 	<div>
 		<h3>Inputs</h3>
-		<pre><?php print_r($_POST);?>
-			
+		<pre><?php 
+			print_r($_POST);
+			$dynamicFields->setOriginalElementNames();?>
 		</pre>
+		<h4>Real Values</h4>
+		<pre><?php print_r($_POST);?></pre>
 	</div>
-	<h3>Try Again</h3><?php }?>
+	<h3>Wanna Try Again</h3>
+	<?php }?>
 	<form action="" method="post">
 		First Name:<input type="text" name="<?php echo $dynamicFields->DynamicName("name[]")?>"/><br>
 		Last Name:<input type="text" name="<?php echo $dynamicFields->DynamicName("name[]")?>"/><br>

@@ -1,27 +1,33 @@
 <?php
 class DynamicFields{
-	private $keepOriginalNames=TRUE;
+	private $keepOriginalNames;
 	private $key;
 	private $keyValidity;
 	private $chars;
-	function __construct(){
+	private $isOriginslSet;
+	
+	function __construct($setOriginal=TRUE,$keepOriginal=TRUE){
 		
 		$this->keyValidity="10 mins";//Change the value as per your needs
 		
 		$this->chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		
+		$this->keepOriginalNames=$keepOriginal;
+		$this->isOriginslSet=false;
 		if (!isset($_SESSION['key'])||empty($_SESSION['key'])||$_SESSION['time']<strtotime("now")){
 			$this->resetKeys();
 		}
 		$this->key=$_SESSION['key'];
-		$this->setOriginalElementNames();
+		if ($setOriginal){
+			$this->setOriginalElementNames();
+		}
 		
 	}
 	
 	/*
 	 * To shuffle the set of chars according to the key.
 	 */
-	function createChanged($passKey){
+	private function createChanged($passKey){
 	
 		$i=str_split($this->chars);
 		$passhash =hash('sha256',$passKey);
@@ -94,7 +100,7 @@ class DynamicFields{
 		return substr($str, 0, rand($min, $max));
 	}
 	function setOriginalElementNames(){
-		if (empty($this->key)||empty($_POST)){
+		if (empty($this->key)||empty($_POST)||$this->isOriginslSet){
 			return;
 		}
 		// 	foreach ($_POST as $key=>$value){
@@ -110,6 +116,7 @@ class DynamicFields{
 				unset($_POST[$key]);//Removes Backup variables.
 			}
 		}
+		$this->isOriginslSet=true;//Making Shure the function is not called more than once.
 	}
 	function DynamicName($name){
 		return $this->Swap($name, $this->key);
