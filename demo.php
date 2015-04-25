@@ -10,13 +10,14 @@ $dynamicFields=new DynamicFields();
 	<title>::Dynamic Fields Demo::</title>
 </head>
 <body>
-	<h1>Dynamic Form Fields</h1>
+	<h1>Dynamic Form Fields</h1><?php if (!empty($_POST)){?>
 	<div>
-		<pre><?php if (!empty($_POST)){
-			print_r($_POST);
-			}?>
+		<h3>Inputs</h3>
+		<pre><?php print_r($_POST);?>
+			
 		</pre>
 	</div>
+	<h3>Try Again</h3><?php }?>
 	<form action="" method="post">
 		First Name:<input type="text" name="<?php echo $dynamicFields->EncryptFormName("name[]")?>"/><br>
 		Last Name:<input type="text" name="<?php echo $dynamicFields->EncryptFormName("name[]")?>"/><br>

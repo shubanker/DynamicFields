@@ -1,5 +1,6 @@
 <?php
 class DynamicFields{
+	private $keepOriginalNames=TRUE;
 	private $key;
 	private $keyValidity;
 	private $chars;
@@ -9,9 +10,8 @@ class DynamicFields{
 		
 		$this->chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		
-		if (!isset($_SESSION['key'])||$_SESSION['time']<strtotime("now")){//
-			$_SESSION['key']=$this->getRandomString(5,11);
-			$_SESSION['time']=strtotime("+ ".$this->keyValidity);
+		if (!isset($_SESSION['key'])||empty($_SESSION['key'])||$_SESSION['time']<strtotime("now")){
+			$this->resetKeys();
 		}
 		$this->key=$_SESSION['key'];
 		$this->setOriginalElementNames();
@@ -25,7 +25,7 @@ class DynamicFields{
 	
 		$i=str_split($this->chars);
 		$passhash =hash('sha256',$passKey);
-// 		Uncomment below line if you change the default chars set.
+// 		Uncomment below line if you change(increase) the default chars set.
 // 		$passhash = (strlen(hash('sha256',$passKey)) < strlen($this->chars))? hash('sha512',$passKey): hash('sha256',$passKey);
 
 		for ($n=0; $n < strlen($this->chars); $n++)
@@ -36,7 +36,7 @@ class DynamicFields{
 	
 		return $converted;
 	}
-	function basicEncrypt($input,$key,$decrypt=FALSE,$salt='AnOptionalRandomString'){
+	private function basicEncrypt($input,$key,$decrypt=FALSE,$salt='AnOptionalRandomString'){
 		
 		$changedkey=$this->createChanged($salt.$key);//Shuffle the characters according to the key
 	
@@ -54,21 +54,14 @@ class DynamicFields{
 				$output.=substr($changed,$j,1);
 			}
 			else {
-				$c=strtolower($c);
-				for($j=0;$j<strlen($normal) && $c!==substr($normal,$j,1);$j++);
-				if ($j<strlen($normal)){
-					$output.=substr($changed,$j,1);
-				}
-				else {
-					$output.=$c;
-				}
+				$output.=$c;//If its not in the set of characters do not include it.
 			}
 		}
 		return $output;
 	}
 	
 	//With another Algo
-	function basicEncrypt2($input,$key,$decrypt=FALSE,$salt='AnOptionalRandomString'){
+	private function basicEncrypt2($input,$key,$decrypt=FALSE,$salt='AnOptionalRandomString'){
 	
 		$changedkey=$this->createChanged($salt.$key);
 		$normal = $decrypt?$changedkey:$this->chars;
@@ -113,10 +106,16 @@ class DynamicFields{
 		$keys=array_keys($_POST);
 		foreach ($keys as $key){
 			$_POST[$this->basicEncrypt($key, $this->key,true)]=&$_POST[$key];//Assigning the address of the received key to decrypted key.
-			// 		unset($_POST[$key]);//Removes Backup variables.
+			if (!$this->keepOriginalNames){
+				unset($_POST[$key]);//Removes Backup variables.
+			}
 		}
 	}
 	function EncryptFormName($name){
 		return $this->basicEncrypt($name, $this->key);
+	}
+	function resetKeys(){
+		$_SESSION['key']=$this->getRandomString(5,11);
+		$_SESSION['time']=strtotime("+ ".$this->keyValidity);
 	}
 }
