@@ -36,7 +36,7 @@ class DynamicFields{
 	
 		return $converted;
 	}
-	private function basicEncrypt($input,$key,$decrypt=FALSE,$salt='AnOptionalRandomString'){
+	private function Swap($input,$key,$decrypt=FALSE,$salt='AnOptionalRandomString'){
 		
 		$changedkey=$this->createChanged($salt.$key);//Shuffle the characters according to the key
 	
@@ -61,7 +61,7 @@ class DynamicFields{
 	}
 	
 	//With another Algo
-	private function basicEncrypt2($input,$key,$decrypt=FALSE,$salt='AnOptionalRandomString'){
+	private function Swap2($input,$key,$decrypt=FALSE,$salt='AnOptionalRandomString'){
 	
 		$changedkey=$this->createChanged($salt.$key);
 		$normal = $decrypt?$changedkey:$this->chars;
@@ -98,21 +98,21 @@ class DynamicFields{
 			return;
 		}
 		// 	foreach ($_POST as $key=>$value){
-		// 		$_POST[basicEncrypt($key, $this->key,true)]=$value;
+		// 		$_POST[Swap($key, $this->key,true)]=$value;
 		// 		unset($_POST[$key]);//Removes Backup variable.
 	
 		// 	}
 		
 		$keys=array_keys($_POST);
 		foreach ($keys as $key){
-			$_POST[$this->basicEncrypt($key, $this->key,true)]=&$_POST[$key];//Assigning the address of the received key to decrypted key.
+			$_POST[$this->Swap($key, $this->key,true)]=&$_POST[$key];//Assigning the address of the received key to decrypted key.
 			if (!$this->keepOriginalNames){
 				unset($_POST[$key]);//Removes Backup variables.
 			}
 		}
 	}
-	function EncryptFormName($name){
-		return $this->basicEncrypt($name, $this->key);
+	function DynamicName($name){
+		return $this->Swap($name, $this->key);
 	}
 	function resetKeys(){
 		$_SESSION['key']=$this->getRandomString(5,11);
