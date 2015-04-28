@@ -6,9 +6,10 @@ class DynamicFields{
 	private $chars;
 	private $isOriginslSet;
 	
-	function __construct($setOriginal=TRUE,$keepOriginal=TRUE){
+	function __construct($setOriginal=TRUE,$keepOriginal=TRUE,$keyValidity=NULL){
 		
-		$this->keyValidity="10 mins";//Change the value as per your needs
+		$defaultKeyValidity="10 mins";
+		$this->keyValidity=$keyValidity==null || empty($keyValidity)?$defaultKeyValidity:$keyValidity;//Change the value as per your needs
 		
 		$this->chars="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		
