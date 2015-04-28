@@ -4,7 +4,7 @@ class DynamicFields{
 	private $key;
 	private $keyValidity;
 	private $chars;
-	private $isOriginslSet;
+	private $isOriginslSet;//TO skip Seting Originals Multiple times.
 	
 	function __construct($setOriginal=TRUE,$keepOriginal=TRUE,$keyValidity=NULL){
 		
@@ -28,14 +28,14 @@ class DynamicFields{
 	/*
 	 * To shuffle the set of chars according to the key.
 	 */
-	private function createChanged($passKey){
+	static private function createChanged($passKey,$chars){
 	
-		$i=str_split($this->chars);
+		$i=str_split($chars);
 		$passhash =hash('sha256',$passKey);
 // 		Uncomment below line if you change(increase) the default chars set.
 // 		$passhash = (strlen(hash('sha256',$passKey)) < strlen($this->chars))? hash('sha512',$passKey): hash('sha256',$passKey);
 
-		for ($n=0; $n < strlen($this->chars); $n++)
+		for ($n=0; $n < strlen($chars); $n++)
 			$p[] =  substr($passhash, $n ,1);
 	
 		array_multisort($p,  SORT_DESC, $i);
@@ -43,12 +43,12 @@ class DynamicFields{
 	
 		return $converted;
 	}
-	private function Swap($input,$key,$decrypt=FALSE,$salt='AnOptionalRandomString'){
+	static private function swap($input,$key,$chars,$decrypt=FALSE,$salt='AnOptionalRandomString'){
 		
-		$changedkey=$this->createChanged($salt.$key);//Shuffle the characters according to the key
+		$changedkey=self::createChanged($salt.$key,$chars);//Shuffle the characters according to the key
 	
-		$normal = $decrypt?$changedkey:$this->chars;
-		$changed=$decrypt?$this->chars:$changedkey;
+		$normal = $decrypt?$changedkey:$chars;
+		$changed=$decrypt?$chars:$changedkey;
 		
 		$output='';
 		$n=str_split($input);
@@ -68,12 +68,12 @@ class DynamicFields{
 	}
 	
 	//With another Algo
-	private function Swap2($input,$key,$decrypt=FALSE,$salt='AnOptionalRandomString'){
+	static private function swap2($input,$key,$chars,$decrypt=FALSE,$salt='AnOptionalRandomString'){
 	
-		$changedkey=$this->createChanged($salt.$key);
-		$normal = $decrypt?$changedkey:$this->chars;
+		$changedkey=self::createChanged($salt.$key,$chars);
+		$normal = $decrypt?$changedkey:$chars;
 	
-		$changed=$decrypt?$this->chars:$changedkey;
+		$changed=$decrypt?$chars:$changedkey;
 	
 		$output='';
 		$n=str_split($input);
@@ -105,14 +105,14 @@ class DynamicFields{
 			return;
 		}
 		// 	foreach ($_POST as $key=>$value){
-		// 		$_POST[Swap($key, $this->key,true)]=$value;
+		// 		$_POST[swap($key, $this->key,true)]=$value;
 		// 		unset($_POST[$key]);//Removes Backup variable.
 	
 		// 	}
 		
 		$keys=array_keys($_POST);
 		foreach ($keys as $key){
-			$_POST[$this->Swap($key, $this->key,true)]=&$_POST[$key];//Assigning the address of the received key to decrypted key.
+			$_POST[self::swap($key, $this->key,$this->chars,true)]=&$_POST[$key];//Assigning the address of the received key to decrypted key.
 			if (!$this->keepOriginalNames){
 				unset($_POST[$key]);//Removes Backup variables.
 			}
@@ -120,10 +120,10 @@ class DynamicFields{
 		$this->isOriginslSet=true;//Making Shure the function is not called more than once.
 	}
 	function DynamicName($name){
-		return $this->Swap($name, $this->key);
+		return self::swap($name, $this->key,$this->chars);
 	}
 	function resetKeys(){
-		$_SESSION['key']=$this->getRandomString(5,11);
+		$_SESSION['key']=self::getRandomString(5,11);
 		$_SESSION['time']=strtotime("+ ".$this->keyValidity);
 	}
 }
