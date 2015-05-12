@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once 'DynamicFields.php';
+require_once '../DynamicFields.php';
 $dynamicFields=new DynamicFields(false,false);
 ?>
 <!doctype html>

@@ -13,7 +13,7 @@ And you can populate `$_POST` with original names by.
 
     $dynamicFields->setOriginalElementNames();
 
-*Please look at [Demo File](demo.php) for its working Demo.*
+*Please look at [Demo File](demo/demo.php) for its working Demo.*
 ## License
 
 See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
