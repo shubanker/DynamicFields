@@ -1,10 +1,14 @@
 <?php
+define("DEFAULT_CHAR_SET","abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
 class ShuffleString{
 	
 	/*
 	 * public refrence to swap useful to switch algo in future.
 	 */
-	static function shuffledName($name,$key,$chars,$decrypt=FALSE,$salt='AnOptionalRandomString'){
+	static function shuffledName($name,$key,$chars,$decrypt=FALSE,$salt=NULL){
+		
+		$salt=$salt==null?'AnOptionalRandomString':$salt;
+		
 		return self::swap($name, $key,$chars,$decrypt,$salt);
 	}
 	
@@ -27,7 +31,9 @@ class ShuffleString{
 		return $converted;
 	}
 	
-	static private function swap($input,$key,$chars,$decrypt=FALSE,$salt='AnOptionalRandomString'){
+	static private function swap($input,$key,$chars,$decrypt=FALSE,$salt=NULL){
+		
+		$salt=$salt==null?'AnOptionalRandomString':$salt;
 		
 		$changedkey=self::createChanged($salt.$key,$chars);//Shuffle the characters according to the key
 	
@@ -52,8 +58,10 @@ class ShuffleString{
 	}
 	
 	//With another Algo
-	static private function swap2($input,$key,$chars,$decrypt=FALSE,$salt='AnOptionalRandomString'){
-	
+	static private function swap2($input,$key,$chars,$decrypt=FALSE,$salt=NULL){
+		
+		$salt=$salt==null?'AnOptionalRandomString':$salt;
+		
 		$changedkey=self::createChanged($salt.$key,$chars);
 		$normal = $decrypt?$changedkey:$chars;
 	
