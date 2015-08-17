@@ -1,7 +1,7 @@
 <?php
 require_once 'ShuffleString.php';
 
-class DynamicFields extends ShuffleString{
+class DynamicForms extends ShuffleString{
 	
 	private $keepOriginalNames;
 	private $key;
@@ -9,10 +9,26 @@ class DynamicFields extends ShuffleString{
 	private $chars;
 	private $isOriginslSet;//TO skip Seting Originals Multiple times.
 	
-	function __construct($setOriginal=TRUE,$keepOriginal=TRUE,$keyValidity=NULL){
+	/*
+	 * @setOriginal-boolean value
+	 * 
+	 * Automatically decodes all $_POST variable and set them to original values if set to true as soon as object is created.
+	 * if set false you can manually call setOriginalElementNames() when you want.
+	 * 
+	 * 
+	 * @keepOriginal-boolean value
+	 * 
+	 * removes traces of the decoded fields names after encoding it.
+	 * it does not creates a copy of variable thus enabling/disabling this won't cause mutch difference in performance.
+	 * 
+	 * 
+	 * @keyValadity-string value
+	 * override default time set for the expiry of the key.
+	 */
+	function __construct($setOriginal=TRUE,$keepOriginal=FALSE,$keyValidity=NULL){
 		
 		$defaultKeyValidity="10 mins";
-		$this->keyValidity=$keyValidity==null || empty($keyValidity)?$defaultKeyValidity:$keyValidity;//Change the value as per your needs
+		$this->keyValidity=empty($keyValidity)?$defaultKeyValidity:$keyValidity;//Change the value as per your needs
 		
 		$this->chars=DEFAULT_CHAR_SET;
 		
@@ -29,7 +45,7 @@ class DynamicFields extends ShuffleString{
 	}
 	function setOriginalElementNames(){
 		if (empty($this->key)||empty($_POST)||$this->isOriginslSet){
-			return;
+			return false;
 		}
 		// 	foreach ($_POST as $key=>$value){
 		// 		$_POST[swap($key, $this->key,true)]=$value;
@@ -44,7 +60,7 @@ class DynamicFields extends ShuffleString{
 				unset($_POST[$key]);//Removes Backup variables.
 			}
 		}
-		$this->isOriginslSet=true;//Making Shure the function is not called more than once.
+		return $this->isOriginslSet=true;//Making Shure the function is not called more than once.
 	}
 	function DynamicName($name){
 		return self::shuffledName($name, $this->key,$this->chars);

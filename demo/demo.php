@@ -1,7 +1,8 @@
 <?php
 session_start();
 require_once '../DynamicForms.php';
-$dynamicFields=new DynamicFields(false,false);
+
+$dynamicFields=new DynamicForms(false);//false skips automatic population of $_POST.
 ?>
 <!doctype html>
 <html lang="en">
@@ -16,7 +17,7 @@ $dynamicFields=new DynamicFields(false,false);
 		<h3>Inputs</h3>
 		<pre><?php 
 			print_r($_POST);
-			$dynamicFields->setOriginalElementNames();?>
+			$dynamicFields->setOriginalElementNames();//Manually Calling setOriginalElementNames() to populate $_POST with decoded fields names.?>
 		</pre>
 		<h4>Real Values</h4>
 		<pre><?php print_r($_POST);?></pre>
